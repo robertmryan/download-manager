@@ -46,10 +46,10 @@
         [fileManager createDirectoryAtPath:folder withIntermediateDirectories:YES attributes:nil error:&error];
         
         // if fail, report error
-        
-        if (error)
+
+        if (self.error)
         {
-            NSLog(@"%s folder create failed; err = %@", __FUNCTION__, error);
+            self.error = error;
             return FALSE;
         }
         
@@ -59,7 +59,9 @@
     }
     else if (!isDirectory)
     {
-        NSLog(@"%s create directory as file of that name already exists", __FUNCTION__);
+        self.error = [NSError errorWithDomain:[NSBundle mainBundle].bundleIdentifier
+                                         code:-1
+                                     userInfo:@{@"message": @"Unable to create directory; file exists by that name", @"function" : @(__FUNCTION__), @"folder": folder}];
         return FALSE;
     }
     
@@ -80,11 +82,37 @@
     
     tempFilename = [self pathForTemporaryFileWithPrefix:@"downloads"];
     downloadStream = [NSOutputStream outputStreamToFileAtPath:tempFilename append:NO];
+    if (!downloadStream)
+    {
+        self.error = [NSError errorWithDomain:[NSBundle mainBundle].bundleIdentifier
+                                         code:-1
+                                     userInfo:@{@"message": @"Unable to create NSOutputStream", @"function" : @(__FUNCTION__), @"path" : tempFilename}];
+
+        [self cleanupConnectionSuccessful:NO];
+        return;
+    }
     [downloadStream open];
     
     NSURLRequest *request = [NSURLRequest requestWithURL:self.url];
-    connection            = [NSURLConnection connectionWithRequest:request delegate:self];
-    NSAssert(connection, @"Connection creation failed");
+    if (!request)
+    {
+        self.error = [NSError errorWithDomain:[NSBundle mainBundle].bundleIdentifier
+                                         code:-1
+                                     userInfo:@{@"message": @"Unable to create URL", @"function": @(__FUNCTION__), @"URL" : self.url}];
+
+        [self cleanupConnectionSuccessful:NO];
+        return;
+    }
+    
+    connection = [NSURLConnection connectionWithRequest:request delegate:self];
+    if (!connection)
+    {
+        self.error = [NSError errorWithDomain:[NSBundle mainBundle].bundleIdentifier
+                                         code:-1
+                                     userInfo:@{@"message": @"Unable to create NSURLConnection", @"function" : @(__FUNCTION__), @"NSURLRequest" : request}];
+
+        [self cleanupConnectionSuccessful:NO];
+    }
 }
 
 - (void)cleanupConnectionSuccessful:(BOOL)success
@@ -113,14 +141,38 @@
     if (success)
     {
         if (![self createFolderForPath:self.filename])
+        {
+            [self.delegate downloadDidFail:self];
             return;
+        }
 
         if ([fileManager fileExistsAtPath:self.filename])
+        {
             [fileManager removeItemAtPath:self.filename error:&error];
+            if (error)
+            {
+                self.error = error;
+                [self.delegate downloadDidFail:self];
+                return;
+            }
+        }
         
         [fileManager copyItemAtPath:tempFilename toPath:self.filename error:&error];
+        if (error)
+        {
+            self.error = error;
+            [self.delegate downloadDidFail:self];
+            return;
+        }
+
         [fileManager removeItemAtPath:tempFilename error:&error];
-        
+        if (error)
+        {
+            self.error = error;
+            [self.delegate downloadDidFail:self];
+            return;
+        }
+
         [self.delegate downloadDidFinishLoading:self];
     }
     else
@@ -133,9 +185,21 @@
 - (void)connection:(NSURLConnection*)connection didReceiveResponse:(NSHTTPURLResponse*) response
 {
     NSInteger statusCode = [response statusCode];
+    
     if (statusCode == 200)
     {
         self.expectedContentLength = [response expectedContentLength];
+    }
+    else if (statusCode >= 400)
+    {
+        self.error = [NSError errorWithDomain:[NSBundle mainBundle].bundleIdentifier
+                                         code:statusCode
+                                     userInfo:@{
+                                                  @"message" : @"bad HTTP response status code",
+                                                  @"function": @(__FUNCTION__),
+                                                  @"NSHTTPURLResponse" : response
+                                              }];
+        [self cleanupConnectionSuccessful:NO];
     }
 }
 
@@ -171,6 +235,8 @@
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {
+    self.error = error;
+    
     [self cleanupConnectionSuccessful:NO];
 }
 
@@ -194,70 +260,5 @@
     
     return result;
 }
-
-//- (void)downloadFile3:(NSString *)filename fromUrl:(NSString *)urlString
-//{
-//    NSFileManager *fileManager = [NSFileManager defaultManager];
-//    NSURL *sourceURL = [NSURL URLWithString:urlString];
-//    NSLog(@"%s sourceURL = %@", __FUNCTION__, sourceURL);
-//
-//    // figure out where you want to store the data
-//
-//    NSLog(@"%s URLsForDirectory=%@", __FUNCTION__, [fileManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask]);
-//
-//    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-//    NSString *documentsFolder = [paths objectAtIndex:0];  // or paths[0];
-//    NSString *filePath = [documentsFolder stringByAppendingPathComponent:filename];
-//    NSURL *destinationUrl = [NSURL fileURLWithPath:filePath];
-//    NSLog(@"%s destinationUrl = %@", __FUNCTION__, destinationUrl);
-//
-//    if (![self createFolderForPath:filePath])
-//    {
-//        return;
-//    }
-//
-//    NSError *error;
-//    [fileManager copyItemAtURL:sourceURL toURL:destinationUrl error:&error];
-//    if (error)
-//        NSLog(@"%s %@", __FUNCTION__, error.localizedDescription);
-//}
-//
-//- (void)downloadFile2:(NSString *)filename fromUrl:(NSString *)urlString
-//{
-//    NSError *error;
-//
-//    // download the data
-//
-//    NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:urlString]];
-//
-//    if (!data)
-//    {
-//        NSLog(@"%s unable to download file", __FUNCTION__);
-//        return;
-//    }
-//
-//    // figure out where you want to store the data
-//
-//    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-//    NSString *documentsFolder = [paths objectAtIndex:0];  // or paths[0];
-//    NSString *filePath = [documentsFolder stringByAppendingPathComponent:filename];
-//
-//    // create the directory if we need to
-//
-//    if (![self createFolderForPath:filePath])
-//    {
-//        return;
-//    }
-//
-//    // if file downloaded and folder exists, then write file
-//
-//    [data writeToFile:filePath options:NSDataWritingAtomic error:&error];
-//
-//    if (error)
-//    {
-//        NSLog(@"%s unabled to write file %@", __FUNCTION__, error);
-//    }
-//}
-
 
 @end

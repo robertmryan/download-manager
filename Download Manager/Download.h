@@ -45,6 +45,7 @@
 @property (getter = isDownloading) BOOL downloading;
 @property long long expectedContentLength;
 @property long long progressContentLength;
+@property (nonatomic, strong) NSError *error;
 
 // this is delegate that this class notifies regarding the progress of a download
 

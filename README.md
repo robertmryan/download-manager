@@ -36,6 +36,7 @@ The `Download` class lets you inquire regarding the progress of a download using
 - The `downloading` boolean will inform you whether this download is in progress or not;
 - The `expectedContentLength` property will tell you how large the file is (if the server told us); and
 - The `progressContentLength` property will tell you how far along in that download we have progress.
+- The `error` property contains any `NSError` that was generated (if any).
 
 ### DownloadManager
 

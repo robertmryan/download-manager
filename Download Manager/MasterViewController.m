@@ -29,6 +29,10 @@
 #import "DownloadCell.h"
 
 @interface MasterViewController () <DownloadManagerDelegateProtocol>
+{
+    NSInteger downloadErrorCount;
+    NSInteger downloadSuccessCount;
+}
 
 @property (strong, nonatomic) DownloadManager *downloadManager;
 
@@ -55,7 +59,6 @@
         @"Module A5 Operation of Freight Services in Winter Issue 2 December 2010.pdf",
         @"Module A6 Automatic Air Brake Regulations Issue 1 June 2011.pdf",
         @"Module A7 Loading of Intermodal Vehicles Issue 1 December 2010.pdf",
-        @"Module A8 Technical Train Preparation Issue 1 December 2010.pdf",
         @"Module B1 Effective Personal Preparation Issue 1 June 2010.pdf",
         @"Module B2 Professional Driving Mindset Issue 1 June 2010.pdf",
         @"Module B3 Professional Driving Skills Issue 1 June 2010.pdf",
@@ -86,17 +89,45 @@
     }
 }
 
+- (void)alertUserIfDownloadsDone
+{
+    if ([self.downloadManager.downloads count] == 0)
+    {
+        NSString *message;
+        if (downloadErrorCount == 0)
+            message = [NSString stringWithFormat:@"%d file(s) downloaded successfully. The files are located in the app's Documents folder on your device/simulator.", downloadSuccessCount];
+        else
+            message = [NSString stringWithFormat:@"%d file(s) downloaded successfully. %d file(s) were not downloaded successfully. The files are located in the app's Documents folder on your device/simulator.", downloadSuccessCount, downloadErrorCount];
+        
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil
+                                                        message:message
+                                                       delegate:nil
+                                              cancelButtonTitle:@"OK"
+                                              otherButtonTitles:nil];
+        [alert show];
+    }
+}
+
 #pragma mark - DownloadManager Delegate Methods
 
 - (void)downloadManager:(DownloadManager *)downloadManager downloadDidFinishLoading:(Download *)download;
 {
+    downloadSuccessCount++;
+    
     [self.tableView reloadData];
+    
+    [self alertUserIfDownloadsDone];
 }
 
 - (void)downloadManager:(DownloadManager *)downloadManager downloadDidFail:(Download *)download;
 {
-    NSLog(@"Download of %@ failed", download.filename);
+    NSLog(@"%s %@ error=%@", __FUNCTION__, download.filename, download.error);
+    
+    downloadErrorCount++;
+    
     [self.tableView reloadData];
+
+    [self alertUserIfDownloadsDone];
 }
 
 - (void)downloadManager:(DownloadManager *)downloadManager downloadDidReceiveData:(Download *)download;
