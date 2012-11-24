@@ -14,9 +14,9 @@ There are two key classes in this project:
 
 ### Download
 
-This is a class to download a single file.
+The `Download` is a class to download a single file using `NSURLConnection`. Note, frequently apps will not use this class directly, but rather just employ the `DownloadManager` class discussed below.
 
-#### Delegate Protocol
+##### Delegate Protocol
 
 The `Download` class defines a delegate protocol, `DownloadDelegateProtocol`, to inform the `delegate` regarding the success or failure of a download. There are three relevant methods:
 
@@ -24,12 +24,12 @@ The `Download` class defines a delegate protocol, `DownloadDelegateProtocol`, to
 - The `downloadDidFail:` informs the delegate that the download failed for some reason; and
 - The `downloadDidReceiveData:` is called to inform the delegate of the progress of a download as it proceeds.
 
-#### Instance Methods
+##### Instance Methods
 
 - The `initWithFilename:URL:delegate:` method creates the `Download` object; and
 - The `download` method initiates the actual download.
 
-#### Properties
+##### Properties
 
 The `Download` class lets you inquire regarding the progress of a download using the following properties:
 
@@ -41,7 +41,7 @@ The `Download` class lets you inquire regarding the progress of a download using
 
 While the `Download` class will download individual files, the `DownloadManager` allows you to coordinate multiple downloads. If you use this `DownloadManager` class, you do not have to interact directly with the `Download` class (other than optionally inquiring about the progress of the downloads in the `DownloadManagerDelegateProtocol` methods).
 
-#### Delegate Protocol
+##### Delegate Protocol
 
 - The `DownloadManager` class defines a delegate protocol, `DownloadManagerDelegateProtocol`, to inform the `delegate` regarding the success or failure of the downloads:
 
@@ -49,12 +49,12 @@ While the `Download` class will download individual files, the `DownloadManager`
 - The `downloadManager:downloadDidFail:` informs the delegate that the download failed for some reason; and
 - The `downloadManager:downloadDidReceiveData:` is called to inform the delegate of the progress of a download as it proceeds.
 
-#### Instance Methods
+##### Instance Methods
 
 - The `initWithDelegate:` method creates the `DownloadManager` object; and
 - The `addDownloadWithFilename:URL:` method adds a download to the list of downloads.
 
-#### Properties
+##### Properties
 
 The `DownloadManager` has the following properties:
 
