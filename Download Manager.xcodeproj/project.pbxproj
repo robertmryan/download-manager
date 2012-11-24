@@ -18,7 +18,11 @@
 		83FEE5831660AEA700D5D6CD /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 83FEE5821660AEA700D5D6CD /* Default-568h@2x.png */; };
 		83FEE5861660AEA700D5D6CD /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 83FEE5841660AEA700D5D6CD /* MainStoryboard.storyboard */; };
 		83FEE5891660AEA700D5D6CD /* MasterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 83FEE5881660AEA700D5D6CD /* MasterViewController.m */; };
-		83FEE58C1660AEA700D5D6CD /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 83FEE58B1660AEA700D5D6CD /* DetailViewController.m */; };
+		83FEE59B1660B0BA00D5D6CD /* Download.m in Sources */ = {isa = PBXBuildFile; fileRef = 83FEE5931660AEE000D5D6CD /* Download.m */; };
+		83FEE59C1660B0C800D5D6CD /* DownloadManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 83FEE5971660AEE000D5D6CD /* DownloadManager.m */; };
+		83FEE59D1660B0C800D5D6CD /* DownloadCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 83FEE5951660AEE000D5D6CD /* DownloadCell.m */; };
+		83FEE5A41660B74C00D5D6CD /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 83FEE5A31660B74C00D5D6CD /* README.md */; };
+		83FEE5A71660BA5100D5D6CD /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 83FEE5A61660BA5100D5D6CD /* LICENSE */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,8 +42,14 @@
 		83FEE5851660AEA700D5D6CD /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/MainStoryboard.storyboard; sourceTree = "<group>"; };
 		83FEE5871660AEA700D5D6CD /* MasterViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MasterViewController.h; sourceTree = "<group>"; };
 		83FEE5881660AEA700D5D6CD /* MasterViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MasterViewController.m; sourceTree = "<group>"; };
-		83FEE58A1660AEA700D5D6CD /* DetailViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DetailViewController.h; sourceTree = "<group>"; };
-		83FEE58B1660AEA700D5D6CD /* DetailViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DetailViewController.m; sourceTree = "<group>"; };
+		83FEE5921660AEE000D5D6CD /* Download.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Download.h; sourceTree = "<group>"; };
+		83FEE5931660AEE000D5D6CD /* Download.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Download.m; sourceTree = "<group>"; };
+		83FEE5941660AEE000D5D6CD /* DownloadCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DownloadCell.h; sourceTree = "<group>"; };
+		83FEE5951660AEE000D5D6CD /* DownloadCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DownloadCell.m; sourceTree = "<group>"; };
+		83FEE5961660AEE000D5D6CD /* DownloadManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DownloadManager.h; sourceTree = "<group>"; };
+		83FEE5971660AEE000D5D6CD /* DownloadManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DownloadManager.m; sourceTree = "<group>"; };
+		83FEE5A31660B74C00D5D6CD /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
+		83FEE5A61660BA5100D5D6CD /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -59,6 +69,9 @@
 		83FEE55D1660AEA700D5D6CD = {
 			isa = PBXGroup;
 			children = (
+				83FEE5A31660B74C00D5D6CD /* README.md */,
+				83FEE5A61660BA5100D5D6CD /* LICENSE */,
+				83FEE59E1660B1FF00D5D6CD /* Example */,
 				83FEE5721660AEA700D5D6CD /* Download Manager */,
 				83FEE56B1660AEA700D5D6CD /* Frameworks */,
 				83FEE5691660AEA700D5D6CD /* Products */,
@@ -86,14 +99,10 @@
 		83FEE5721660AEA700D5D6CD /* Download Manager */ = {
 			isa = PBXGroup;
 			children = (
-				83FEE57B1660AEA700D5D6CD /* AppDelegate.h */,
-				83FEE57C1660AEA700D5D6CD /* AppDelegate.m */,
-				83FEE5841660AEA700D5D6CD /* MainStoryboard.storyboard */,
-				83FEE5871660AEA700D5D6CD /* MasterViewController.h */,
-				83FEE5881660AEA700D5D6CD /* MasterViewController.m */,
-				83FEE58A1660AEA700D5D6CD /* DetailViewController.h */,
-				83FEE58B1660AEA700D5D6CD /* DetailViewController.m */,
-				83FEE5731660AEA700D5D6CD /* Supporting Files */,
+				83FEE5921660AEE000D5D6CD /* Download.h */,
+				83FEE5931660AEE000D5D6CD /* Download.m */,
+				83FEE5961660AEE000D5D6CD /* DownloadManager.h */,
+				83FEE5971660AEE000D5D6CD /* DownloadManager.m */,
 			);
 			path = "Download Manager";
 			sourceTree = "<group>";
@@ -110,6 +119,22 @@
 				83FEE5821660AEA700D5D6CD /* Default-568h@2x.png */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		83FEE59E1660B1FF00D5D6CD /* Example */ = {
+			isa = PBXGroup;
+			children = (
+				83FEE57B1660AEA700D5D6CD /* AppDelegate.h */,
+				83FEE57C1660AEA700D5D6CD /* AppDelegate.m */,
+				83FEE5841660AEA700D5D6CD /* MainStoryboard.storyboard */,
+				83FEE5871660AEA700D5D6CD /* MasterViewController.h */,
+				83FEE5881660AEA700D5D6CD /* MasterViewController.m */,
+				83FEE5941660AEE000D5D6CD /* DownloadCell.h */,
+				83FEE5951660AEE000D5D6CD /* DownloadCell.m */,
+				83FEE5731660AEA700D5D6CD /* Supporting Files */,
+			);
+			name = Example;
+			path = "Download Manager";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -168,6 +193,8 @@
 				83FEE5811660AEA700D5D6CD /* Default@2x.png in Resources */,
 				83FEE5831660AEA700D5D6CD /* Default-568h@2x.png in Resources */,
 				83FEE5861660AEA700D5D6CD /* MainStoryboard.storyboard in Resources */,
+				83FEE5A41660B74C00D5D6CD /* README.md in Resources */,
+				83FEE5A71660BA5100D5D6CD /* LICENSE in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -178,10 +205,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				83FEE59C1660B0C800D5D6CD /* DownloadManager.m in Sources */,
+				83FEE59D1660B0C800D5D6CD /* DownloadCell.m in Sources */,
+				83FEE59B1660B0BA00D5D6CD /* Download.m in Sources */,
 				83FEE5791660AEA700D5D6CD /* main.m in Sources */,
 				83FEE57D1660AEA700D5D6CD /* AppDelegate.m in Sources */,
 				83FEE5891660AEA700D5D6CD /* MasterViewController.m in Sources */,
-				83FEE58C1660AEA700D5D6CD /* DetailViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -298,6 +327,7 @@
 				83FEE5911660AEA700D5D6CD /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
