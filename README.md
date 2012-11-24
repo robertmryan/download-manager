@@ -34,7 +34,7 @@ The `Download` class defines a delegate protocol, `DownloadDelegateProtocol`, to
 The `Download` class lets you inquire regarding the progress of a download using the following properties:
 
 - The `downloading` boolean will inform you whether this download is in progress or not;
-- The `expectedContentLength` property will tell you how large the file is (if the server told us);
+- The `expectedContentLength` property will tell you how large the file is (if the server told us; it's a negative number otherwise);
 - The `progressContentLength` property will tell you how far along in that download we have progress; and
 - The `error` property contains any `NSError` that was generated (if any).
 
