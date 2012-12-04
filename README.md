@@ -28,6 +28,7 @@ The `Download` class defines a delegate protocol, `DownloadDelegateProtocol`, to
 
 - The `initWithFilename:URL:delegate:` method creates the `Download` object; and
 - The `download` method initiates the actual download.
+- The `cancel` method cancels the current download. Upon successful cancellation, `downloadDidFail` will be called.
 
 ##### Properties
 
@@ -53,7 +54,8 @@ While the `Download` class will download individual files, the `DownloadManager`
 ##### Instance Methods
 
 - The `initWithDelegate:` method creates the `DownloadManager` object; and
-- The `addDownloadWithFilename:URL:` method adds a download to the list of downloads.
+- The `addDownloadWithFilename:URL:` method queue a download and if possible, initiates that download.
+- The `cancelAll` method cancels all downloads, both those in progress and those queued to be processed.
 
 ##### Properties
 
