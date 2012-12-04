@@ -28,12 +28,12 @@
 
 @protocol DownloadDelegateProtocol <NSObject>
 
+@optional
+
 // these are the delegate protocol methods regarding the success or failure of a download
 
 - (void)downloadDidFinishLoading:(Download *)download;
 - (void)downloadDidFail:(Download *)download;
-
-@optional
 
 // this is the optional protocol method to inform the caller regarding the progress of an ongoing download
 
@@ -55,6 +55,10 @@
 // this is the method to initiate the download
 
 - (void)download;
+
+// this is the method to cancel a download in progress, if needed
+
+- (void)cancel;
 
 // these are the properties that the caller can inquire regarding the status of a download
 

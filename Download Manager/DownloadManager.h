@@ -61,6 +61,10 @@
 
 - (void)addDownloadWithFilename:(NSString *)filename URL:(NSURL *)url;
 
+// this is the method to cancel the downloads
+
+- (void)cancelAll;
+
 // this is delegate that this class notifies regarding the progress of the individual downloads
 
 @property (nonatomic, weak) id<DownloadManagerDelegateProtocol> delegate;

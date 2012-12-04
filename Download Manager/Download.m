@@ -137,6 +137,11 @@
     }
 }
 
+- (void)cancel
+{
+    [self cleanupConnectionSuccessful:NO];
+}
+
 - (void)cleanupConnectionSuccessful:(BOOL)success
 {
     NSFileManager *fileManager = [NSFileManager defaultManager];
@@ -203,7 +208,10 @@
     }
     else
     {
-        [fileManager removeItemAtPath:self.tempFilename error:&error];
+        if (self.tempFilename)
+            if ([fileManager fileExistsAtPath:self.tempFilename])
+                [fileManager removeItemAtPath:self.tempFilename error:&error];
+        
         [self.delegate downloadDidFail:self];
     }
 }

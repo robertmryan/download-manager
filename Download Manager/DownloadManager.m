@@ -27,6 +27,8 @@
 
 @interface DownloadManager () <DownloadDelegateProtocol>
 
+@property (nonatomic) BOOL cancelAllInProgress;
+
 @end
 
 @implementation DownloadManager
@@ -56,14 +58,7 @@
     return self;
 }
 
-- (void)addDownloadWithFilename:(NSString *)filename URL:(NSURL *)url
-{
-    Download *download = [[Download alloc] initWithFilename:filename URL:url delegate:self];
-    
-    [self.downloads addObject:download];
-    
-    [self tryDownloading];
-}
+#pragma mark DownloadDelegate Methods
 
 - (void)downloadDidFinishLoading:(Download *)download
 {
@@ -74,8 +69,11 @@
 
 - (void)downloadDidFail:(Download *)download
 {
-    [self.downloads removeObject:download];
-    [self tryDownloading];
+    if (!self.cancelAllInProgress)
+    {
+        [self.downloads removeObject:download];
+        [self tryDownloading];
+    }
     [self.delegate downloadManager:self downloadDidFail:download];
 }
 
@@ -85,6 +83,29 @@
     {
         [self.delegate downloadManager:self downloadDidReceiveData:download];
     }
+}
+
+#pragma mark DownloadManager instance methods
+
+- (void)addDownloadWithFilename:(NSString *)filename URL:(NSURL *)url
+{
+    Download *download = [[Download alloc] initWithFilename:filename URL:url delegate:self];
+    
+    [self.downloads addObject:download];
+    
+    [self tryDownloading];
+}
+
+- (void)cancelAll
+{
+    self.cancelAllInProgress = YES;
+    
+    for (Download *download in self.downloads)
+        [download cancel];
+    
+    [self.downloads removeAllObjects];
+    
+    self.cancelAllInProgress = NO;
 }
 
 - (void)tryDownloading
