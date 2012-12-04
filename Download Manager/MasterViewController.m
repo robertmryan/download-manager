@@ -49,43 +49,27 @@
 
 - (void)queueAndStartDownloads
 {
+    
+#warning replace filenames and URL with the names of the files and the URL you want to download them from 
+    
     NSArray *filenames = @[
-        @"GOA Briefing v2.pdf",
-        @"Index Issue 3 June 2011.pdf",
-        @"Module A1 Coupling and Uncoupling Issue 1 June 2010.pdf",
-        @"Module A2 Attaching a Loco to a Train in Service Issue 1 June 2010.pdf",
-        @"Module A3 Preparing and Securing Trains Issue 1 June 2010.pdf",
-        @"Module A4 Automatic Air Brake Testing Issue 1 June 2010.pdf",
-        @"Module A5 Operation of Freight Services in Winter Issue 2 December 2010.pdf",
-        @"Module A6 Automatic Air Brake Regulations Issue 1 June 2011.pdf",
-        @"Module A7 Loading of Intermodal Vehicles Issue 1 December 2010.pdf",
-        @"Module B1 Effective Personal Preparation Issue 1 June 2010.pdf",
-        @"Module B2 Professional Driving Mindset Issue 1 June 2010.pdf",
-        @"Module B3 Professional Driving Skills Issue 1 June 2010.pdf",
-        @"Module B4 Situational Awareness Issue 1 June 2010.pdf",
-        @"Module B5 SPAD and Operational Risk Issue 1 June 2010.pdf",
-        @"Module B6 Driving Cab Etiquette Issue 1 June 2010.pdf",
-        @"Module B7 Economic Driving Issue 1 June 2010.pdf",
-        @"Module B8 Seasonal Risk Issue 1 June 2010.pdf",
-        @"Module C1 Terminal and Yard Shunting Operations Issue 1 April 2010.pdf",
-        @"Module C2 Controlling Shunting Movements Issue 1 June 2010.pdf",
-        @"Module D1 Hauling of Locomotives Issue 1 June 2010.pdf",
-        @"Module D3 Operation of Translator Vehicles Issue 1 December 2010.pdf",
-        @"Module D5 Operation of HYA and IIA vehicles issue 1 December.pdf"
+        @"file1.zip",
+        @"file2.zip"
     ];
     
-    self.downloadManager = [[DownloadManager alloc] initWithDelegate:self];
+    NSURL *baseUrl = [NSURL URLWithString:@"http://your-url-here.com/files"];
     
     NSString *documentsPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
     NSString *downloadFolder = [documentsPath stringByAppendingPathComponent:@"downloads"];
+
+    self.downloadManager = [[DownloadManager alloc] initWithDelegate:self];
     
     for (NSString *filename in filenames)
     {
         NSString *downloadFilename = [downloadFolder stringByAppendingPathComponent:filename];
-        NSString *baseUrlString = @"http://abelsoul.fav.cc/Dox/FilesGBRF/GOA";
-        NSString *finalUrlString = [baseUrlString stringByAppendingPathComponent:[filename stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+        NSURL *finalUrl = [baseUrl URLByAppendingPathComponent:[filename stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
         
-        [self.downloadManager addDownloadWithFilename:downloadFilename URL:[NSURL URLWithString:finalUrlString]];
+        [self.downloadManager addDownloadWithFilename:downloadFilename URL:finalUrl];
     }
 }
 

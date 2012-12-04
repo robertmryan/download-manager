@@ -25,11 +25,12 @@
 #import "Download.h"
 
 @interface Download () <NSURLConnectionDelegate>
-{
-    NSOutputStream *downloadStream;
-    NSURLConnection *connection;
-    NSString *tempFilename;
-}
+
+@property (strong, nonatomic) NSOutputStream *downloadStream;
+@property (strong, nonatomic) NSURLConnection *connection;
+@property (strong, nonatomic) NSString *tempFilename;
+@property (strong, nonatomic) Download *strongReferenceToSelf;
+
 @end
 
 @implementation Download
@@ -88,6 +89,11 @@
 
 - (void)download
 {
+    // let's maintain a strong reference to ourself in case the method that created this didn't maintain a strong reference
+    // this will be released in cleanupConnectionSuccessful
+    
+    self.strongReferenceToSelf = self;
+
     // initialize progress variables
     
     self.downloading = YES;
@@ -96,18 +102,18 @@
     
     // create the download file stream (so we can write the file as we download it
     
-    tempFilename = [self pathForTemporaryFileWithPrefix:@"downloads"];
-    downloadStream = [NSOutputStream outputStreamToFileAtPath:tempFilename append:NO];
-    if (!downloadStream)
+    self.tempFilename = [self pathForTemporaryFileWithPrefix:@"downloads"];
+    self.downloadStream = [NSOutputStream outputStreamToFileAtPath:self.tempFilename append:NO];
+    if (!self.downloadStream)
     {
         self.error = [NSError errorWithDomain:[NSBundle mainBundle].bundleIdentifier
                                          code:-1
-                                     userInfo:@{@"message": @"Unable to create NSOutputStream", @"function" : @(__FUNCTION__), @"path" : tempFilename}];
+                                     userInfo:@{@"message": @"Unable to create NSOutputStream", @"function" : @(__FUNCTION__), @"path" : self.tempFilename}];
 
         [self cleanupConnectionSuccessful:NO];
         return;
     }
-    [downloadStream open];
+    [self.downloadStream open];
     
     NSURLRequest *request = [NSURLRequest requestWithURL:self.url];
     if (!request)
@@ -120,8 +126,8 @@
         return;
     }
     
-    connection = [NSURLConnection connectionWithRequest:request delegate:self];
-    if (!connection)
+    self.connection = [NSURLConnection connectionWithRequest:request delegate:self];
+    if (!self.connection)
     {
         self.error = [NSError errorWithDomain:[NSBundle mainBundle].bundleIdentifier
                                          code:-1
@@ -136,18 +142,22 @@
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSError *error;
 
+    // let's resolve the strong reference to ourself, so the object can be released when the download is done
+    
+    self.strongReferenceToSelf = nil;
+    
     // clean up connection and download steam
     
-    if (connection != nil)
+    if (self.connection != nil)
     {
         if (!success)
-            [connection cancel];
-        connection = nil;
+            [self.connection cancel];
+        self.connection = nil;
     }
-    if (downloadStream != nil)
+    if (self.downloadStream != nil)
     {
-        [downloadStream close];
-        downloadStream = nil;
+        [self.downloadStream close];
+        self.downloadStream = nil;
     }
     
     self.downloading = NO;
@@ -173,7 +183,7 @@
             }
         }
         
-        [fileManager copyItemAtPath:tempFilename toPath:self.filename error:&error];
+        [fileManager copyItemAtPath:self.tempFilename toPath:self.filename error:&error];
         if (error)
         {
             self.error = error;
@@ -181,7 +191,7 @@
             return;
         }
 
-        [fileManager removeItemAtPath:tempFilename error:&error];
+        [fileManager removeItemAtPath:self.tempFilename error:&error];
         if (error)
         {
             self.error = error;
@@ -193,7 +203,7 @@
     }
     else
     {
-        [fileManager removeItemAtPath:tempFilename error:&error];
+        [fileManager removeItemAtPath:self.tempFilename error:&error];
         [self.delegate downloadDidFail:self];
     }
 }
@@ -228,7 +238,7 @@
     
     bytesWrittenSoFar = 0;
     do {
-        bytesWritten = [downloadStream write:&dataBytes[bytesWrittenSoFar] maxLength:dataLength - bytesWrittenSoFar];
+        bytesWritten = [self.downloadStream write:&dataBytes[bytesWrittenSoFar] maxLength:dataLength - bytesWrittenSoFar];
         assert(bytesWritten != 0);
         if (bytesWritten == -1) {
             [self cleanupConnectionSuccessful:NO];
