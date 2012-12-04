@@ -117,9 +117,9 @@
     {
         for (Download *download in self.downloads)
         {
-            if (!download.downloading)
+            if (!download.isDownloading)
             {
-                [download download];
+                [download start];
                 return;
             }
         }
@@ -132,7 +132,7 @@
     
     for (Download *download in self.downloads)
     {
-        if (download.downloading)
+        if (download.isDownloading)
             activeDownloadCount++;
     }
     

@@ -29,7 +29,6 @@
 @property (strong, nonatomic) NSOutputStream *downloadStream;
 @property (strong, nonatomic) NSURLConnection *connection;
 @property (strong, nonatomic) NSString *tempFilename;
-@property (strong, nonatomic) Download *strongReferenceToSelf;
 
 @end
 
@@ -87,13 +86,8 @@
     return TRUE;
 }
 
-- (void)download
+- (void)start
 {
-    // let's maintain a strong reference to ourself in case the method that created this didn't maintain a strong reference
-    // this will be released in cleanupConnectionSuccessful
-    
-    self.strongReferenceToSelf = self;
-
     // initialize progress variables
     
     self.downloading = YES;
@@ -147,10 +141,6 @@
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSError *error;
 
-    // let's resolve the strong reference to ourself, so the object can be released when the download is done
-    
-    self.strongReferenceToSelf = nil;
-    
     // clean up connection and download steam
     
     if (self.connection != nil)

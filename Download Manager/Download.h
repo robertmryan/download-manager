@@ -54,7 +54,7 @@
 
 // this is the method to initiate the download
 
-- (void)download;
+- (void)start;
 
 // this is the method to cancel a download in progress, if needed
 
