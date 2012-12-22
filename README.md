@@ -20,7 +20,7 @@ The `Download` is a class to download a single file using `NSURLConnection`. Not
 
 The `Download` class defines a delegate protocol, `DownloadDelegateProtocol`, to inform the `delegate` regarding the success or failure of a download. There are three relevant methods:
 
-- The `downloadDidFinishLoading:` informs the delegate that the download finished successfully;
+- The `downloadDidFinishLoading:` informs the delegate that the individual download finished successfully;
 - The `downloadDidFail:` informs the delegate that the download failed for some reason; and
 - The `downloadDidReceiveData:` is called to inform the delegate of the progress of a download as it proceeds.
 
@@ -45,7 +45,11 @@ While the `Download` class will download individual files, the `DownloadManager`
 
 ##### Delegate Protocol
 
-- The `DownloadManager` class defines a delegate protocol, `DownloadManagerDelegateProtocol`, to inform the `delegate` regarding the success or failure of the downloads:
+The `DownloadManager` class defines a delegate protocol, `DownloadManagerDelegateProtocol`, to inform the `delegate` regarding the success or failure of the downloads. The first informs the delegate regarding the completion of all queued downloads:
+
+- The `didFinishLoadingAllForManager` method informs the delegate that all downloads have finished (whether successfully or unsuccessfully)
+
+The other three methods inform the delegate regarding the progress of the individual downloads:
 
 - The `downloadManager:downloadDidFinishLoading:` informs the delegate that the download finished successfully;
 - The `downloadManager:downloadDidFail:` informs the delegate that the download failed for some reason; and
@@ -63,6 +67,86 @@ The `DownloadManager` has the following properties:
 
 - The `downloads` array is a list of `Download` requests that are queued and/or in progress (you can inquire the `Download` properties of the individual entries to determine their status);
 - The `maxConcurrentDownloads` lets you dictate how many individual downloads may operate concurrently. This defaults to `4`.
+
+## How to Use
+
+First, declare a property for the download manager and, if you want to be informed of the progress of the downloads, conform to the `DownloadManagerDelegateProtocol`:
+
+    #import "DownloadManager.h"
+
+    @interface ViewController () <DownloadManagerDelegateProtocol>
+    @property (strong, nonatomic) DownloadManager *downloadManager;
+    @end
+
+Second, start the downloads:
+
+    - (void)queueAndStartDownloads
+    {
+        NSString *documentsPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
+        NSString *downloadFolder = [documentsPath stringByAppendingPathComponent:@"downloads"];
+            
+        // an array of files to be downloaded
+        
+        NSArray *urlStrings = @[
+            @"http://your.web.site.here.com/test/file1.pdf",
+            @"http://your.web.site.here.com/test/file2.pdf",
+            @"http://your.web.site.here.com/test/file3.pdf",
+            @"http://your.web.site.here.com/test/file4.pdf"
+        ];
+        
+        // create download manager instance
+        
+        self.downloadManager = [[DownloadManager alloc] initWithDelegate:self];
+        
+        // queue the files to be downloaded
+        
+        for (NSString *urlString in urlStrings)
+        {
+            NSString *downloadFilename = [downloadFolder stringByAppendingPathComponent:[urlString lastPathComponent]];
+            NSURL *url = [NSURL URLWithString:urlString];
+            
+            [self.downloadManager addDownloadWithFilename:downloadFilename URL:url];
+        }
+
+        // start the download manager
+                
+        [self.downloadManager start];
+    }
+
+Third, if you want to be informed when the downloads complete, define a `didFinishLoadingAllForManager` method
+
+    - (void)didFinishLoadingAllForManager:(DownloadManager *)downloadManager
+    {
+        // all downloads successful
+    }
+
+Fourth, if you want to be informed of the success or failure of individual downloads, define
+
+    - (void)downloadManager:(DownloadManager *)downloadManager downloadDidFinishLoading:(Download *)download;
+    {
+        // download failed
+        // filename is retrieved from `download.filename`
+    }
+
+    - (void)downloadManager:(DownloadManager *)downloadManager downloadDidFail:(Download *)download;
+    {
+        // download failed
+        // filename is retrieved from `download.filename`
+    }
+    
+Fifth, and finally, if you want to be informed as the download is in progress, you can use
+
+    - (void)downloadManager:(DownloadManager *)downloadManager downloadDidReceiveData:(Download *)download;
+    {
+        // download failed
+        // filename is retrieved from `download.filename`
+        // the bytes downloaded thus far is `download.progressContentLength`
+        // if the server reported the size of the file, it is returned by `download.expectedContentLength`
+    }
+
+By the way, regarding `download.expectedContentLength`, it should be noted that Apple reports that this is not entirely trustworthy:
+
+> Some protocol implementations report the content length as part of the response, but not all protocols guarantee to deliver that amount of data. Clients should be prepared to deal with more or less data.
 
 ## Example
 
