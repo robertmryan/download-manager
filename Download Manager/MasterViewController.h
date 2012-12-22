@@ -27,4 +27,8 @@
 
 @interface MasterViewController : UITableViewController
 
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *cancelButton;
+
+- (IBAction)tappedCancelButton:(id)sender;
+
 @end
