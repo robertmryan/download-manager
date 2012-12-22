@@ -34,6 +34,8 @@
 
 @implementation Download
 
+#pragma mark - Public methods
+
 - (id)initWithFilename:(NSString *)filename URL:(NSURL *)url delegate:(id<DownloadDelegateProtocol>)delegate
 {
     self = [super init];
@@ -47,6 +49,58 @@
     
     return self;
 }
+
+- (void)start
+{
+    // initialize progress variables
+    
+    self.downloading = YES;
+    self.expectedContentLength = -1;
+    self.progressContentLength = 0;
+    
+    // create the download file stream (so we can write the file as we download it
+    
+    self.tempFilename = [self pathForTemporaryFileWithPrefix:@"downloads"];
+    self.downloadStream = [NSOutputStream outputStreamToFileAtPath:self.tempFilename append:NO];
+    if (!self.downloadStream)
+    {
+        self.error = [NSError errorWithDomain:[NSBundle mainBundle].bundleIdentifier
+                                         code:-1
+                                     userInfo:@{@"message": @"Unable to create NSOutputStream", @"function" : @(__FUNCTION__), @"path" : self.tempFilename}];
+        
+        [self cleanupConnectionSuccessful:NO];
+        return;
+    }
+    [self.downloadStream open];
+    
+    NSURLRequest *request = [NSURLRequest requestWithURL:self.url];
+    if (!request)
+    {
+        self.error = [NSError errorWithDomain:[NSBundle mainBundle].bundleIdentifier
+                                         code:-1
+                                     userInfo:@{@"message": @"Unable to create URL", @"function": @(__FUNCTION__), @"URL" : self.url}];
+        
+        [self cleanupConnectionSuccessful:NO];
+        return;
+    }
+    
+    self.connection = [NSURLConnection connectionWithRequest:request delegate:self];
+    if (!self.connection)
+    {
+        self.error = [NSError errorWithDomain:[NSBundle mainBundle].bundleIdentifier
+                                         code:-1
+                                     userInfo:@{@"message": @"Unable to create NSURLConnection", @"function" : @(__FUNCTION__), @"NSURLRequest" : request}];
+        
+        [self cleanupConnectionSuccessful:NO];
+    }
+}
+
+- (void)cancel
+{
+    [self cleanupConnectionSuccessful:NO];
+}
+
+#pragma mark - Private methods
 
 - (BOOL)createFolderForPath:(NSString *)filePath
 {
@@ -84,56 +138,6 @@
     // directory already existed
     
     return TRUE;
-}
-
-- (void)start
-{
-    // initialize progress variables
-    
-    self.downloading = YES;
-    self.expectedContentLength = -1;
-    self.progressContentLength = 0;
-    
-    // create the download file stream (so we can write the file as we download it
-    
-    self.tempFilename = [self pathForTemporaryFileWithPrefix:@"downloads"];
-    self.downloadStream = [NSOutputStream outputStreamToFileAtPath:self.tempFilename append:NO];
-    if (!self.downloadStream)
-    {
-        self.error = [NSError errorWithDomain:[NSBundle mainBundle].bundleIdentifier
-                                         code:-1
-                                     userInfo:@{@"message": @"Unable to create NSOutputStream", @"function" : @(__FUNCTION__), @"path" : self.tempFilename}];
-
-        [self cleanupConnectionSuccessful:NO];
-        return;
-    }
-    [self.downloadStream open];
-    
-    NSURLRequest *request = [NSURLRequest requestWithURL:self.url];
-    if (!request)
-    {
-        self.error = [NSError errorWithDomain:[NSBundle mainBundle].bundleIdentifier
-                                         code:-1
-                                     userInfo:@{@"message": @"Unable to create URL", @"function": @(__FUNCTION__), @"URL" : self.url}];
-
-        [self cleanupConnectionSuccessful:NO];
-        return;
-    }
-    
-    self.connection = [NSURLConnection connectionWithRequest:request delegate:self];
-    if (!self.connection)
-    {
-        self.error = [NSError errorWithDomain:[NSBundle mainBundle].bundleIdentifier
-                                         code:-1
-                                     userInfo:@{@"message": @"Unable to create NSURLConnection", @"function" : @(__FUNCTION__), @"NSURLRequest" : request}];
-
-        [self cleanupConnectionSuccessful:NO];
-    }
-}
-
-- (void)cancel
-{
-    [self cleanupConnectionSuccessful:NO];
 }
 
 - (void)cleanupConnectionSuccessful:(BOOL)success
@@ -206,6 +210,29 @@
     }
 }
 
+- (NSString *)pathForTemporaryFileWithPrefix:(NSString *)prefix
+{
+    NSString *  result;
+    CFUUIDRef   uuid;
+    CFStringRef uuidStr;
+    
+    uuid = CFUUIDCreate(NULL);
+    assert(uuid != NULL);
+    
+    uuidStr = CFUUIDCreateString(NULL, uuid);
+    assert(uuidStr != NULL);
+    
+    result = [NSTemporaryDirectory() stringByAppendingPathComponent:[NSString stringWithFormat:@"%@-%@", prefix, uuidStr]];
+    assert(result != nil);
+    
+    CFRelease(uuidStr);
+    CFRelease(uuid);
+    
+    return result;
+}
+
+#pragma mark - NSURLConnectionDataDelegate methods
+
 - (void)connection:(NSURLConnection*)connection didReceiveResponse:(NSHTTPURLResponse*) response
 {
     NSInteger statusCode = [response statusCode];
@@ -262,27 +289,6 @@
     self.error = error;
     
     [self cleanupConnectionSuccessful:NO];
-}
-
-- (NSString *)pathForTemporaryFileWithPrefix:(NSString *)prefix
-{
-    NSString *  result;
-    CFUUIDRef   uuid;
-    CFStringRef uuidStr;
-    
-    uuid = CFUUIDCreate(NULL);
-    assert(uuid != NULL);
-    
-    uuidStr = CFUUIDCreateString(NULL, uuid);
-    assert(uuidStr != NULL);
-    
-    result = [NSTemporaryDirectory() stringByAppendingPathComponent:[NSString stringWithFormat:@"%@-%@", prefix, uuidStr]];
-    assert(result != nil);
-    
-    CFRelease(uuidStr);
-    CFRelease(uuid);
-    
-    return result;
 }
 
 @end
