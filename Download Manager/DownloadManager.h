@@ -30,12 +30,13 @@
 
 @protocol DownloadManagerDelegateProtocol <NSObject>
 
+@optional
+
 // these are the delegate protocol methods regarding the success or failure of a particular download
 
+- (void)didFinishLoadingAllForManager:(DownloadManager *)downloadManager;
 - (void)downloadManager:(DownloadManager *)downloadManager downloadDidFinishLoading:(Download *)download;
 - (void)downloadManager:(DownloadManager *)downloadManager downloadDidFail:(Download *)download;
-
-@optional
 
 // this is the optional protocol method to inform the caller regarding the progress of a particular, ongoing download
 
@@ -60,6 +61,10 @@
 // this is the method to add a download to the manager
 
 - (void)addDownloadWithFilename:(NSString *)filename URL:(NSURL *)url;
+
+// this starts the queued downloads
+
+- (void)start;
 
 // this is the method to cancel the downloads
 

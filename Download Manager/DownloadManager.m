@@ -46,6 +46,34 @@
     return self;
 }
 
+#pragma mark - DownloadManager public methods
+
+- (void)addDownloadWithFilename:(NSString *)filename URL:(NSURL *)url
+{
+    Download *download = [[Download alloc] initWithFilename:filename URL:url delegate:self];
+    
+    [self.downloads addObject:download];
+}
+
+- (void)start
+{
+    [self tryDownloading];
+}
+
+- (void)cancelAll
+{
+    self.cancelAllInProgress = YES;
+    
+    while ([self.downloads count] > 0)
+    {
+        [[self.downloads objectAtIndex:0] cancel];
+    }
+    
+    self.cancelAllInProgress = NO;
+    
+    [self informDelegateThatDownloadsAreDone];
+}
+
 - (id)initWithDelegate:(id<DownloadManagerDelegateProtocol>)delegate
 {
     self = [self init];
@@ -58,23 +86,31 @@
     return self;
 }
 
-#pragma mark DownloadDelegate Methods
+#pragma mark - DownloadDelegate Methods
 
 - (void)downloadDidFinishLoading:(Download *)download
 {
     [self.downloads removeObject:download];
+    
+    if ([self.delegate respondsToSelector:@selector(downloadManager:downloadDidFinishLoading:)])
+    {
+        [self.delegate downloadManager:self downloadDidFinishLoading:download];
+    }
+
     [self tryDownloading];
-    [self.delegate downloadManager:self downloadDidFinishLoading:download];
 }
 
 - (void)downloadDidFail:(Download *)download
 {
+    [self.downloads removeObject:download];
+
+    if ([self.delegate respondsToSelector:@selector(downloadManager:downloadDidFail:)])
+        [self.delegate downloadManager:self downloadDidFail:download];
+
     if (!self.cancelAllInProgress)
     {
-        [self.downloads removeObject:download];
         [self tryDownloading];
     }
-    [self.delegate downloadManager:self downloadDidFail:download];
 }
 
 - (void)downloadDidReceiveData:(Download *)download
@@ -85,45 +121,46 @@
     }
 }
 
-#pragma mark DownloadManager instance methods
+#pragma mark - Private methods
 
-- (void)addDownloadWithFilename:(NSString *)filename URL:(NSURL *)url
+- (void)informDelegateThatDownloadsAreDone
 {
-    Download *download = [[Download alloc] initWithFilename:filename URL:url delegate:self];
-    
-    [self.downloads addObject:download];
-    
-    [self tryDownloading];
-}
-
-- (void)cancelAll
-{
-    self.cancelAllInProgress = YES;
-    
-    for (Download *download in self.downloads)
-        [download cancel];
-    
-    [self.downloads removeAllObjects];
-    
-    self.cancelAllInProgress = NO;
+    if ([self.delegate respondsToSelector:@selector(didFinishLoadingAllForManager:)])
+    {
+        [self.delegate didFinishLoadingAllForManager:self];
+    }
 }
 
 - (void)tryDownloading
 {
-    NSInteger activeDownloads = [self countActiveDownloads];
-    NSInteger awaitingDownloads = self.downloads.count - activeDownloads;
+    NSInteger totalDownloads = [self.downloads count];
     
-    if (awaitingDownloads > 0 && activeDownloads < self.maxConcurrentDownloads)
+    // if we're done, inform the delegate
+    
+    if (totalDownloads == 0)
+    {
+        [self informDelegateThatDownloadsAreDone];
+        return;
+    }
+    
+    // while there are downloads waiting to be started and we haven't hit the maxConcurrentDownloads, then start
+    
+    while ([self countUnstartedDownloads] > 0 && [self countActiveDownloads] < self.maxConcurrentDownloads)
     {
         for (Download *download in self.downloads)
         {
             if (!download.isDownloading)
             {
                 [download start];
-                return;
+                break;
             }
         }
     }
+}
+
+- (NSInteger)countUnstartedDownloads
+{
+    return [self.downloads count] - [self countActiveDownloads];
 }
 
 - (NSInteger)countActiveDownloads
