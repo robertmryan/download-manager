@@ -71,7 +71,9 @@ The `Download` class lets you inquire regarding the progress of a download using
 
 ## How to Use
 
-First, declare a property for the download manager and, if you want to be informed of the progress of the downloads, conform to the `DownloadManagerDelegateProtocol`:
+First, you should add the `Download.h`, `Download.m`, `DownloadManager.h` and `DownloadManager.m` files to your project. As always, whenever adding files to your project, make sure the two `.m` files show up under "Compile Sources", in the "Build Phases" section of your target settings.
+
+Second, declare a property for the download manager and, if you want to be informed of the progress of the downloads, conform to the `DownloadManagerDelegateProtocol`:
 
     #import "DownloadManager.h"
 
@@ -79,7 +81,7 @@ First, declare a property for the download manager and, if you want to be inform
     @property (strong, nonatomic) DownloadManager *downloadManager;
     @end
 
-Second, start the downloads:
+Third, start the downloads:
 
     - (void)queueAndStartDownloads
     {
@@ -114,14 +116,14 @@ Second, start the downloads:
         [self.downloadManager start];
     }
 
-Third, if you want to be informed when the downloads complete, define a `didFinishLoadingAllForManager` method
+Fourth, if you want to be informed when the downloads complete, define a `didFinishLoadingAllForManager` method
 
     - (void)didFinishLoadingAllForManager:(DownloadManager *)downloadManager
     {
         // all downloads successful
     }
 
-Fourth, if you want to be informed of the success or failure of individual downloads, define
+Fifth, if you want to be informed of the success or failure of individual downloads, define
 
     - (void)downloadManager:(DownloadManager *)downloadManager downloadDidFinishLoading:(Download *)download;
     {
@@ -135,7 +137,7 @@ Fourth, if you want to be informed of the success or failure of individual downl
         // filename is retrieved from `download.filename`
     }
     
-Fifth, and finally, if you want to be informed as the download is in progress, you can use
+Sixth, and finally, if you want to be informed as the download is in progress, you can use
 
     - (void)downloadManager:(DownloadManager *)downloadManager downloadDidReceiveData:(Download *)download;
     {
