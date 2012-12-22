@@ -4,9 +4,9 @@
 
 ## Introduction
 
-This is a demonstration of the use of [`NSURLConnection`](https://developer.apple.com/library/ios/#documentation/Cocoa/Reference/Foundation/Classes/NSURLConnection_Class/Reference/Reference.html), an iOS Cocoa class for loading a URL request, to download files from the Internet. See the [URL Loading System Programming Guide](https://developer.apple.com/library/ios/#documentation/Cocoa/Conceptual/URLLoadingSystem/URLLoadingSystem.html#//apple_ref/doc/uid/10000165i) for more information about the proper use and capabilities of `NSURLConnection`.
+This is a demonstration of the use of [`NSURLConnection`](https://developer.apple.com/library/ios/#documentation/Cocoa/Reference/Foundation/Classes/NSURLConnection_Class/Reference/Reference.html), an iOS Cocoa class for loading a URL request, to download files from the Internet. See the [URL Loading System Programming Guide](https://developer.apple.com/library/ios/#documentation/Cocoa/Conceptual/URLLoadingSystem/URLLoadingSystem.html#//apple_ref/doc/uid/10000165i) for more information about the proper use and capabilities of `NSURLConnection` as well as that of [`NSURLConnectionDataDelegate`](http://developer.apple.com/library/ios/#documentation/Foundation/Reference/NSURLConnectionDataDelegate_protocol/Reference/Reference.html).
 
-Most `NSURLConnection` implementations load the entire file into memory while it's being downloaded. This has been designed to avoid that shortcoming, directly streaming the file to persistent storage. Furthermore, as it's streaming the contents to persistent storage, this routine also can inform the calling routine (through a delegate protocol, discussed below) of the progress of the download.
+Many simple `NSURLConnection` implementations load the entire file into memory while it's being downloaded. This has been designed to avoid that shortcoming, directly streaming the file to persistent storage. Furthermore, as it's streaming the contents to persistent storage, this routine also can inform the calling routine (through a delegate protocol, discussed below) of the progress of the download.
 
 ## Classes
 
