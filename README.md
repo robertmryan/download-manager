@@ -12,9 +12,39 @@ This was created to answer a question on Stack Overflow. Please refer to that [q
 
 There are two key classes in this project:
 
+### DownloadManager
+
+While the `Download` class (below) will download individual files, the `DownloadManager` allows you to coordinate multiple downloads. If you use this `DownloadManager` class, you do not have to interact directly with the `Download` class (other than optionally inquiring about the progress of the downloads in the `DownloadManagerDelegateProtocol` methods).
+
+##### Delegate Protocol
+
+The `DownloadManager` class defines a delegate protocol, `DownloadManagerDelegateProtocol`, to inform the `delegate` regarding the success or failure of the downloads. The first informs the delegate regarding the completion of all queued downloads:
+
+- The `didFinishLoadingAllForManager` method informs the delegate that all downloads have finished (whether successfully or unsuccessfully)
+
+The other three methods inform the delegate regarding the progress of the individual downloads:
+
+- The `downloadManager:downloadDidFinishLoading:` informs the delegate that the download finished successfully;
+- The `downloadManager:downloadDidFail:` informs the delegate that the download failed for some reason; and
+- The `downloadManager:downloadDidReceiveData:` is called to inform the delegate of the progress of a download as it proceeds.
+
+##### Instance Methods
+
+- The `initWithDelegate:` method creates the `DownloadManager` object;
+- The `addDownloadWithFilename:URL:` method queue a download and if possible, initiates that download;
+- The `start` method initiates the downloads; and
+- The `cancelAll` method cancels all downloads, both those in progress and those queued to be processed.
+
+##### Properties
+
+The `DownloadManager` has the following properties:
+
+- The `downloads` array is a list of `Download` requests that are queued and/or in progress (you can inquire the `Download` properties of the individual entries to determine their status);
+- The `maxConcurrentDownloads` lets you dictate how many individual downloads may operate concurrently. This defaults to `4`.
+
 ### Download
 
-The `Download` is a class to download a single file using `NSURLConnection`. Note, frequently apps will not use this class directly, but rather just employ the `DownloadManager` class discussed below.
+The `Download` is a class to download a single file using `NSURLConnection`. Generally you will not interact directly with this class, but rather just employ the `DownloadManager` class discussed above.
 
 ##### Delegate Protocol
 
@@ -38,35 +68,6 @@ The `Download` class lets you inquire regarding the progress of a download using
 - The `expectedContentLength` property will tell you how large the file is (if the server told us; it's a negative number otherwise);
 - The `progressContentLength` property will tell you how far along in that download we have progress; and
 - The `error` property contains any `NSError` that was generated (if any).
-
-### DownloadManager
-
-While the `Download` class will download individual files, the `DownloadManager` allows you to coordinate multiple downloads. If you use this `DownloadManager` class, you do not have to interact directly with the `Download` class (other than optionally inquiring about the progress of the downloads in the `DownloadManagerDelegateProtocol` methods).
-
-##### Delegate Protocol
-
-The `DownloadManager` class defines a delegate protocol, `DownloadManagerDelegateProtocol`, to inform the `delegate` regarding the success or failure of the downloads. The first informs the delegate regarding the completion of all queued downloads:
-
-- The `didFinishLoadingAllForManager` method informs the delegate that all downloads have finished (whether successfully or unsuccessfully)
-
-The other three methods inform the delegate regarding the progress of the individual downloads:
-
-- The `downloadManager:downloadDidFinishLoading:` informs the delegate that the download finished successfully;
-- The `downloadManager:downloadDidFail:` informs the delegate that the download failed for some reason; and
-- The `downloadManager:downloadDidReceiveData:` is called to inform the delegate of the progress of a download as it proceeds.
-
-##### Instance Methods
-
-- The `initWithDelegate:` method creates the `DownloadManager` object; and
-- The `addDownloadWithFilename:URL:` method queue a download and if possible, initiates that download.
-- The `cancelAll` method cancels all downloads, both those in progress and those queued to be processed.
-
-##### Properties
-
-The `DownloadManager` has the following properties:
-
-- The `downloads` array is a list of `Download` requests that are queued and/or in progress (you can inquire the `Download` properties of the individual entries to determine their status);
-- The `maxConcurrentDownloads` lets you dictate how many individual downloads may operate concurrently. This defaults to `4`.
 
 ## How to Use
 
