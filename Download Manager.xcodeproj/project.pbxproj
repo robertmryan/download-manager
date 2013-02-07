@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		8329C81E16C411BE00771554 /* Documentation in Resources */ = {isa = PBXBuildFile; fileRef = 8329C81D16C411BE00771554 /* Documentation */; };
 		83FEE56D1660AEA700D5D6CD /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 83FEE56C1660AEA700D5D6CD /* UIKit.framework */; };
 		83FEE56F1660AEA700D5D6CD /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 83FEE56E1660AEA700D5D6CD /* Foundation.framework */; };
 		83FEE5711660AEA700D5D6CD /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 83FEE5701660AEA700D5D6CD /* CoreGraphics.framework */; };
@@ -27,7 +26,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		8329C81D16C411BE00771554 /* Documentation */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Documentation; sourceTree = "<group>"; };
 		83FEE5681660AEA700D5D6CD /* Download Manager.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Download Manager.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		83FEE56C1660AEA700D5D6CD /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		83FEE56E1660AEA700D5D6CD /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -73,7 +71,6 @@
 			children = (
 				83FEE5A31660B74C00D5D6CD /* README.md */,
 				83FEE5A61660BA5100D5D6CD /* LICENSE */,
-				8329C81D16C411BE00771554 /* Documentation */,
 				83FEE59E1660B1FF00D5D6CD /* Example */,
 				83FEE5721660AEA700D5D6CD /* Download Manager */,
 				83FEE56B1660AEA700D5D6CD /* Frameworks */,
@@ -198,7 +195,6 @@
 				83FEE5861660AEA700D5D6CD /* MainStoryboard.storyboard in Resources */,
 				83FEE5A41660B74C00D5D6CD /* README.md in Resources */,
 				83FEE5A71660BA5100D5D6CD /* LICENSE in Resources */,
-				8329C81E16C411BE00771554 /* Documentation in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
