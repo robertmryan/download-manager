@@ -25,7 +25,7 @@
 #import "DownloadManager.h"
 #import "Download.h"
 
-@interface DownloadManager () <DownloadDelegateProtocol>
+@interface DownloadManager () <DownloadDelegate>
 
 @property (nonatomic) BOOL cancelAllInProgress;
 
@@ -74,7 +74,7 @@
     [self informDelegateThatDownloadsAreDone];
 }
 
-- (id)initWithDelegate:(id<DownloadManagerDelegateProtocol>)delegate
+- (id)initWithDelegate:(id<DownloadManagerDelegate>)delegate
 {
     self = [self init];
     
