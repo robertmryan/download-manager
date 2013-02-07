@@ -36,7 +36,7 @@
 
 #pragma mark - Public methods
 
-- (id)initWithFilename:(NSString *)filename URL:(NSURL *)url delegate:(id<DownloadDelegateProtocol>)delegate
+- (id)initWithFilename:(NSString *)filename URL:(NSURL *)url delegate:(id<DownloadDelegate>)delegate
 {
     self = [super init];
     
