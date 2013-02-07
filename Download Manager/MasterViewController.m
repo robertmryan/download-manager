@@ -28,7 +28,7 @@
 #import "DownloadManager.h"
 #import "DownloadCell.h"
 
-@interface MasterViewController () <DownloadManagerDelegateProtocol>
+@interface MasterViewController () <DownloadManagerDelegate>
 {
     NSInteger downloadErrorCount;
     NSInteger downloadSuccessCount;
@@ -47,6 +47,42 @@
     [self queueAndStartDownloads];
 }
 
+- (void)queueAndStartDownloadsUsingOperationQueue
+{
+    NSString *documentsPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
+    
+    NSArray *urlStrings = @[@"http://dl.dropbox.com/u/48118200/motion/transition.swf"];
+//        @"http://www.robertmryan.com/test/hugefile.php",
+//        @"http://www.robertmryan.com/test/ABTORG.db",
+//        @"http://www.robertmryan.com/test/ArcProblem.zip",
+//        @"http://www.robertmryan.com/test/swanlake.psd"
+//    ];
+
+    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+    
+    NSBlockOperation *competionOperation = [NSBlockOperation blockOperationWithBlock:^{
+        NSLog(@"done");
+    }];
+    
+    for (NSString *urlString in urlStrings)
+    {
+        NSBlockOperation *operation = [NSBlockOperation blockOperationWithBlock:^{
+            NSURL *url = [NSURL URLWithString:urlString];
+            NSURLRequest *request = [NSURLRequest requestWithURL:url];
+            NSURLResponse *response;
+            NSError *error;
+            NSData *data = [NSURLConnection sendSynchronousRequest:request
+                                                 returningResponse:&response
+                                                             error:&error];
+            NSString *documentPath = [documentsPath stringByAppendingPathComponent:[url lastPathComponent]];
+            [data writeToFile:documentPath atomically:YES];
+        }];
+        [competionOperation addDependency:operation];
+    }
+    [queue addOperations:competionOperation.dependencies waitUntilFinished:NO];
+    [queue addOperation:competionOperation];
+}
+
 - (void)queueAndStartDownloads
 {
     
@@ -57,12 +93,12 @@
 
     // an array of files to be downloaded
     
-    NSArray *urlStrings = @[
-        @"http://www.yourwebsitehere.com/test/file1.pdf",
-        @"http://www.yourwebsitehere.com/test/file2.pdf",
-        @"http://www.yourwebsitehere.com/test/file3.pdf",
-        @"http://www.yourwebsitehere.com/test/file4.pdf"
-    ];
+    NSArray *urlStrings = @[@"http://dl.dropbox.com/u/48118200/motion/transition.swf"];
+//        @"http://www.yourwebsitehere.com/test/file1.pdf",
+//        @"http://www.yourwebsitehere.com/test/file2.pdf",
+//        @"http://www.yourwebsitehere.com/test/file3.pdf",
+//        @"http://www.yourwebsitehere.com/test/file4.pdf"
+//    ];
     
     // create download manager instance
     
