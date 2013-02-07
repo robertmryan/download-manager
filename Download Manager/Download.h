@@ -26,49 +26,136 @@
 
 @class Download;
 
-@protocol DownloadDelegateProtocol <NSObject>
+/** The `Download` class defines a delegate protocol, `DownloadDelegate`,
+ * to inform the `delegate` regarding the success or failure of a download.
+ *
+ * @see Download
+ */
+
+@protocol DownloadDelegate <NSObject>
 
 @optional
 
-// these are the delegate protocol methods regarding the success or failure of a download
+/** Called to notify delegate that the download completed.
+ *
+ * @param download
+ *
+ * Pointer to the `Download` that just completed.
+ *
+ * @see Download
+ *
+ */
 
 - (void)downloadDidFinishLoading:(Download *)download;
+
+/** Called to notify delegate that the download completed.
+ *
+ * @param download
+ *
+ * Pointer to the `Download` that just failed.
+ *
+ * @see Download
+ *
+ */
+
 - (void)downloadDidFail:(Download *)download;
 
-// this is the optional protocol method to inform the caller regarding the progress of an ongoing download
+/** Called to notify delegate that the download completed.
+ *
+ * @param download
+ *
+ * Pointer to the `Download` that just failed.
+ *
+ * @see Download
+ *
+ */
 
 - (void)downloadDidReceiveData:(Download *)download;
 
 @end
 
+/** The `Download` is a class to download a single file using `NSURLConnection`. 
+ * Generally you will not interact directly with this class, but rather just
+ * employ the `DownloadManager` class.
+ *
+ * @see DownloadManager
+ */
+
 @interface Download : NSObject <NSURLConnectionDelegate>
 
-// these are the properties the caller must set before initiating a download
+/// @name Properties
+
+/** The local filename of the file being downloaded. Generally not set manually, but rather by call to `initWithFilename:URL:delegate:`.
+ *
+ * @see initWithFilename:URL:delegate:
+ */
 
 @property (nonatomic, copy) NSString *filename;
+
+/** The remote URL of the file being downloaded. Generally not set manually, but rather by call to `initWithFilename:URL:delegate:`.
+ *
+ * @see initWithFilename:URL:delegate:
+ */
+
 @property (nonatomic, copy) NSURL *url;
 
-// this is a convenience method to create download object and set filename and url properties
+/** The delegate object that conforms to `DownloadDelegate`, if any.
+ *
+ * @see DownloadDelegate
+ */
 
-- (id)initWithFilename:(NSString *)filename URL:(NSURL *)url delegate:(id<DownloadDelegateProtocol>)delegate;
+@property (nonatomic, weak) id<DownloadDelegate> delegate;
 
-// this is the method to initiate the download
+/// `BOOL` property designating whether this download is in progress or not.
+
+@property (getter = isDownloading) BOOL downloading;
+
+/** `long long` property that designates how large the file is (in bytes). Some
+ * servers will provide this information, some will not. If no size
+ * information provided, `expectedContentLength` will be negative.
+ *
+ * @warning Even if servers provide this information, this is not
+ * always reliable. Never depend upon the accuracy of this property.
+ */
+
+@property long long expectedContentLength;
+
+/// `long long` property indicates the current progress (in bytes).
+
+@property long long progressContentLength;
+
+/// If there was an error, what was it. Otherwise `nil`.
+
+@property (nonatomic, strong) NSError *error;
+
+/// @name Initialization
+
+/** Returns pointer to `Download` object and initiates download from `url`, saving the file to `filename`.
+ *
+ * @param filename
+ *
+ * The local filename of the file being downloaded.
+ *
+ * @param url
+ *
+ * The remote URL of the file being downloaded. 
+ *
+ * @param delegate
+ *
+ * The delegate object to be notified of the status of the download. Must conform to `DownloadDelegate` protocol. This is optional.
+ *
+ */
+
+- (id)initWithFilename:(NSString *)filename URL:(NSURL *)url delegate:(id<DownloadDelegate>)delegate;
+
+/// @name Control
+
+/// Start the individual download.
 
 - (void)start;
 
-// this is the method to cancel a download in progress, if needed
+/// Cancel the individual download, whether in progress or simply pending.
 
 - (void)cancel;
-
-// these are the properties that the caller can inquire regarding the status of a download
-
-@property (getter = isDownloading) BOOL downloading;
-@property long long expectedContentLength;
-@property long long progressContentLength;
-@property (nonatomic, strong) NSError *error;
-
-// this is delegate that this class notifies regarding the progress of a download
-
-@property (nonatomic, weak) id<DownloadDelegateProtocol> delegate;
 
 @end
