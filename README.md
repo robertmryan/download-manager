@@ -10,7 +10,7 @@ Many simple `NSURLConnection` implementations load the entire file into memory w
 
 ## Class Reference
 
-Please see the [Class Reference](Documentation/html/).
+Please see the [Class Reference](Documentation/html/index.html).
 
 ## How to Use
 
