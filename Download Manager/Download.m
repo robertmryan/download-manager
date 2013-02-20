@@ -233,24 +233,33 @@
 
 #pragma mark - NSURLConnectionDataDelegate methods
 
-- (void)connection:(NSURLConnection*)connection didReceiveResponse:(NSHTTPURLResponse*) response
+- (void)connection:(NSURLConnection*)connection didReceiveResponse:(NSURLResponse *)response
 {
-    NSInteger statusCode = [response statusCode];
-    
-    if (statusCode == 200)
+    if ([response isKindOfClass:[NSHTTPURLResponse class]])
     {
-        self.expectedContentLength = [response expectedContentLength];
+        NSHTTPURLResponse *httpResponse = (id)response;
+        
+        NSInteger statusCode = [httpResponse statusCode];
+        
+        if (statusCode == 200)
+        {
+            self.expectedContentLength = [response expectedContentLength];
+        }
+        else if (statusCode >= 400)
+        {
+            self.error = [NSError errorWithDomain:[NSBundle mainBundle].bundleIdentifier
+                                             code:statusCode
+                                         userInfo:@{
+                                                      @"message" : @"bad HTTP response status code",
+                                                      @"function": @(__FUNCTION__),
+                                                      @"NSHTTPURLResponse" : response
+                                                  }];
+            [self cleanupConnectionSuccessful:NO];
+        }
     }
-    else if (statusCode >= 400)
+    else
     {
-        self.error = [NSError errorWithDomain:[NSBundle mainBundle].bundleIdentifier
-                                         code:statusCode
-                                     userInfo:@{
-                                                  @"message" : @"bad HTTP response status code",
-                                                  @"function": @(__FUNCTION__),
-                                                  @"NSHTTPURLResponse" : response
-                                              }];
-        [self cleanupConnectionSuccessful:NO];
+        self.expectedContentLength = -1;
     }
 }
 
