@@ -29,12 +29,11 @@
 #import "DownloadCell.h"
 
 @interface MasterViewController () <DownloadManagerDelegate>
-{
-    NSInteger downloadErrorCount;
-    NSInteger downloadSuccessCount;
-}
 
 @property (strong, nonatomic) DownloadManager *downloadManager;
+@property (strong, nonatomic) NSDate *startDate;
+@property (nonatomic) NSInteger downloadErrorCount;
+@property (nonatomic) NSInteger downloadSuccessCount;
 
 @end
 
@@ -47,42 +46,6 @@
     [self queueAndStartDownloads];
 }
 
-- (void)queueAndStartDownloadsUsingOperationQueue
-{
-    NSString *documentsPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
-    
-    NSArray *urlStrings = @[@"http://dl.dropbox.com/u/48118200/motion/transition.swf"];
-//        @"http://www.robertmryan.com/test/hugefile.php",
-//        @"http://www.robertmryan.com/test/ABTORG.db",
-//        @"http://www.robertmryan.com/test/ArcProblem.zip",
-//        @"http://www.robertmryan.com/test/swanlake.psd"
-//    ];
-
-    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
-    
-    NSBlockOperation *competionOperation = [NSBlockOperation blockOperationWithBlock:^{
-        NSLog(@"done");
-    }];
-    
-    for (NSString *urlString in urlStrings)
-    {
-        NSBlockOperation *operation = [NSBlockOperation blockOperationWithBlock:^{
-            NSURL *url = [NSURL URLWithString:urlString];
-            NSURLRequest *request = [NSURLRequest requestWithURL:url];
-            NSURLResponse *response;
-            NSError *error;
-            NSData *data = [NSURLConnection sendSynchronousRequest:request
-                                                 returningResponse:&response
-                                                             error:&error];
-            NSString *documentPath = [documentsPath stringByAppendingPathComponent:[url lastPathComponent]];
-            [data writeToFile:documentPath atomically:YES];
-        }];
-        [competionOperation addDependency:operation];
-    }
-    [queue addOperations:competionOperation.dependencies waitUntilFinished:NO];
-    [queue addOperation:competionOperation];
-}
-
 - (void)queueAndStartDownloads
 {
     
@@ -93,17 +56,15 @@
 
     // an array of files to be downloaded
     
-    NSArray *urlStrings = @[@"http://dl.dropbox.com/u/48118200/motion/transition.swf"];
-//        @"http://www.yourwebsitehere.com/test/file1.pdf",
-//        @"http://www.yourwebsitehere.com/test/file2.pdf",
-//        @"http://www.yourwebsitehere.com/test/file3.pdf",
-//        @"http://www.yourwebsitehere.com/test/file4.pdf"
-//    ];
+    NSArray *urlStrings = @[@"http://www.yourwebsitehere.com/test/file1.pdf",
+                            @"http://www.yourwebsitehere.com/test/file2.pdf",
+                            @"http://www.yourwebsitehere.com/test/file3.pdf",
+                            @"http://www.yourwebsitehere.com/test/file4.pdf"];
     
     // create download manager instance
     
     self.downloadManager = [[DownloadManager alloc] initWithDelegate:self];
-    self.downloadManager.maxConcurrentDownloads = 2;
+    self.downloadManager.maxConcurrentDownloads = 4;
     
     // queue the files to be downloaded
     
@@ -118,6 +79,7 @@
     // I've added a cancel button to my user interface, so now that downloads have started, let's enable that button
     
     self.cancelButton.enabled = YES;
+    self.startDate = [NSDate date];
     
     [self.downloadManager start];
 }
@@ -132,12 +94,14 @@
 {
     NSString *message;
     
+    NSTimeInterval elapsed = [[NSDate date] timeIntervalSinceDate:self.startDate];
+    
     self.cancelButton.enabled = NO;
     
-    if (downloadErrorCount == 0)
-        message = [NSString stringWithFormat:@"%d file(s) downloaded successfully. The files are located in the app's Documents folder on your device/simulator.", downloadSuccessCount];
+    if (self.downloadErrorCount == 0)
+        message = [NSString stringWithFormat:@"%d file(s) downloaded successfully. The files are located in the app's Documents folder on your device/simulator. (%.1f seconds)", self.downloadSuccessCount, elapsed];
     else
-        message = [NSString stringWithFormat:@"%d file(s) downloaded successfully. %d file(s) were not downloaded successfully. The files are located in the app's Documents folder on your device/simulator.", downloadSuccessCount, downloadErrorCount];
+        message = [NSString stringWithFormat:@"%d file(s) downloaded successfully. %d file(s) were not downloaded successfully. The files are located in the app's Documents folder on your device/simulator. (%.1f seconds)", self.downloadSuccessCount, self.downloadErrorCount, elapsed];
     
     [[[UIAlertView alloc] initWithTitle:nil
                                 message:message
@@ -153,7 +117,7 @@
 
 - (void)downloadManager:(DownloadManager *)downloadManager downloadDidFinishLoading:(Download *)download;
 {
-    downloadSuccessCount++;
+    self.downloadSuccessCount++;
     
     [self.tableView reloadData];
 }
@@ -167,7 +131,7 @@
 {
     NSLog(@"%s %@ error=%@", __FUNCTION__, download.filename, download.error);
     
-    downloadErrorCount++;
+    self.downloadErrorCount++;
     
     [self.tableView reloadData];
 }

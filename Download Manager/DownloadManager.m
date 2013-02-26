@@ -40,7 +40,7 @@
     if (self)
     {
         _downloads = [[NSMutableArray alloc] init];
-        _maxConcurrentDownloads = 4;
+        _maxConcurrentDownloads = 12;
     }
     
     return self;
