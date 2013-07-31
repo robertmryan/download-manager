@@ -8,6 +8,8 @@ This is a demonstration of the use of [`NSURLConnection`](https://developer.appl
 
 Many simple `NSURLConnection` implementations load the entire file into memory while it's being downloaded. This has been designed to avoid that shortcoming, directly streaming the file to persistent storage. Furthermore, as it's streaming the contents to persistent storage, this routine also can inform the calling routine (through a delegate protocol, discussed below) of the progress of the download.
 
+Note, since writing this class, I decided to write a `NSOperation`-based solution, [`DownloadOperation`](https://github.com/robertmryan/download-operation), which is far simpler, employing `NSOperationQueue` to take care of the management of the download operations. I would suggest you look at that solution first, before considering this particular implementation. Or, even better, consider using an actively supported networking library like [AFNetworking](https://github.com/AFNetworking/AFNetworking).
+
 ## Class Reference
 
 Please see the [Class Reference](http://robertmryan.github.com/download-manager).
