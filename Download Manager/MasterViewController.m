@@ -64,7 +64,6 @@
     // create download manager instance
     
     self.downloadManager = [[DownloadManager alloc] initWithDelegate:self];
-    self.downloadManager.maxConcurrentDownloads = 4;
     
     // queue the files to be downloaded
     
