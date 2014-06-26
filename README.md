@@ -48,17 +48,12 @@ Third, start the downloads:
         
         // queue the files to be downloaded
         
-        for (NSString *urlString in urlStrings)
-        {
+        for (NSString *urlString in urlStrings) {
             NSString *downloadFilename = [downloadFolder stringByAppendingPathComponent:[urlString lastPathComponent]];
             NSURL *url = [NSURL URLWithString:urlString];
             
             [self.downloadManager addDownloadWithFilename:downloadFilename URL:url];
         }
-
-        // start the download manager
-                
-        [self.downloadManager start];
     }
 
 Fourth, if you want to be informed when the downloads complete, define a `didFinishLoadingAllForManager` method
