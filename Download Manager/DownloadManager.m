@@ -63,6 +63,8 @@
     Download *download = [[Download alloc] initWithFilename:filename URL:url delegate:self];
     
     [self.downloads addObject:download];
+    
+    [self start];
 }
 
 - (void)start

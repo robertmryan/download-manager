@@ -79,8 +79,6 @@
     
     self.cancelButton.enabled = YES;
     self.startDate = [NSDate date];
-    
-    [self.downloadManager start];
 }
 
 #pragma mark - DownloadManager Delegate Methods

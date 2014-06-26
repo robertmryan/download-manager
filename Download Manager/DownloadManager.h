@@ -128,7 +128,7 @@
  * @see DownloadManagerDelegate
  */
 
-- (id)initWithDelegate:(id<DownloadManagerDelegate>)delegate;
+- (instancetype)initWithDelegate:(id<DownloadManagerDelegate>)delegate;
 
 /// @name Control Download Manager
 
@@ -147,10 +147,6 @@
  */
 
 - (void)addDownloadWithFilename:(NSString *)filename URL:(NSURL *)url;
-
-/// Starts the queued downloads.
-
-- (void)start;
 
 /// Cancel all downloads in progress or pending.
 
