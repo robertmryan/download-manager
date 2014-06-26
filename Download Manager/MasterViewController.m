@@ -56,10 +56,12 @@
 
     // an array of files to be downloaded
     
-    NSArray *urlStrings = @[@"http://www.yourwebsitehere.com/test/file1.pdf",
-                            @"http://www.yourwebsitehere.com/test/file2.pdf",
-                            @"http://www.yourwebsitehere.com/test/file3.pdf",
-                            @"http://www.yourwebsitehere.com/test/file4.pdf"];
+    NSArray *urlStrings = @[@"http://spaceflight.nasa.gov/gallery/images/apollo/apollo17/hires/s72-55482.jpg",
+                            @"http://spaceflight.nasa.gov/gallery/images/apollo/apollo10/hires/as10-34-5162.jpg",
+                            @"http://spaceflight.nasa.gov/gallery/images/apollo-soyuz/apollo-soyuz/hires/s75-33375.jpg",
+                            @"http://spaceflight.nasa.gov/gallery/images/apollo/apollo17/hires/as17-134-20380.jpg",
+                            @"http://spaceflight.nasa.gov/gallery/images/apollo/apollo17/hires/as17-140-21497.jpg",
+                            @"http://spaceflight.nasa.gov/gallery/images/apollo/apollo17/hires/as17-148-22727.jpg"];
     
     // create download manager instance
     
