@@ -36,14 +36,13 @@
 
 #pragma mark - Public methods
 
-- (id)initWithFilename:(NSString *)filename URL:(NSURL *)url delegate:(id<DownloadDelegate>)delegate
+- (instancetype)initWithFilename:(NSString *)filename URL:(NSURL *)url delegate:(id<DownloadDelegate>)delegate
 {
     self = [super init];
     
-    if (self)
-    {
-        _filename = filename;
-        _url = url;
+    if (self) {
+        _filename = [filename copy];
+        _url = [url copy];
         _delegate = delegate;
     }
     
@@ -62,8 +61,7 @@
     
     self.tempFilename = [self pathForTemporaryFileWithPrefix:@"downloads"];
     self.downloadStream = [NSOutputStream outputStreamToFileAtPath:self.tempFilename append:NO];
-    if (!self.downloadStream)
-    {
+    if (!self.downloadStream) {
         self.error = [NSError errorWithDomain:[NSBundle mainBundle].bundleIdentifier
                                          code:-1
                                      userInfo:@{@"message": @"Unable to create NSOutputStream", @"function" : @(__FUNCTION__), @"path" : self.tempFilename}];
@@ -74,8 +72,7 @@
     [self.downloadStream open];
     
     NSURLRequest *request = [NSURLRequest requestWithURL:self.url];
-    if (!request)
-    {
+    if (!request) {
         self.error = [NSError errorWithDomain:[NSBundle mainBundle].bundleIdentifier
                                          code:-1
                                      userInfo:@{@"message": @"Unable to create URL", @"function": @(__FUNCTION__), @"URL" : self.url}];
@@ -85,8 +82,7 @@
     }
     
     self.connection = [NSURLConnection connectionWithRequest:request delegate:self];
-    if (!self.connection)
-    {
+    if (!self.connection) {
         self.error = [NSError errorWithDomain:[NSBundle mainBundle].bundleIdentifier
                                          code:-1
                                      userInfo:@{@"message": @"Unable to create NSURLConnection", @"function" : @(__FUNCTION__), @"NSURLRequest" : request}];
@@ -109,16 +105,14 @@
     NSString *folder = [filePath stringByDeletingLastPathComponent];
     BOOL isDirectory;
     
-    if (![fileManager fileExistsAtPath:folder isDirectory:&isDirectory])
-    {
+    if (![fileManager fileExistsAtPath:folder isDirectory:&isDirectory]) {
         // if folder doesn't exist, try to create it
         
         [fileManager createDirectoryAtPath:folder withIntermediateDirectories:YES attributes:nil error:&error];
         
         // if fail, report error
 
-        if (self.error)
-        {
+        if (self.error) {
             self.error = error;
             return FALSE;
         }
@@ -126,9 +120,7 @@
         // directory successfully created
         
         return TRUE;
-    }
-    else if (!isDirectory)
-    {
+    } else if (!isDirectory) {
         self.error = [NSError errorWithDomain:[NSBundle mainBundle].bundleIdentifier
                                          code:-1
                                      userInfo:@{@"message": @"Unable to create directory; file exists by that name", @"function" : @(__FUNCTION__), @"folder": folder}];
@@ -147,14 +139,13 @@
 
     // clean up connection and download steam
     
-    if (self.connection != nil)
-    {
-        if (!success)
+    if (self.connection != nil) {
+        if (!success) {
             [self.connection cancel];
+        }
         self.connection = nil;
     }
-    if (self.downloadStream != nil)
-    {
+    if (self.downloadStream != nil) {
         [self.downloadStream close];
         self.downloadStream = nil;
     }
@@ -163,19 +154,15 @@
     
     // if successful, move file and clean up, otherwise just cleanup
     
-    if (success)
-    {
-        if (![self createFolderForPath:self.filename])
-        {
+    if (success) {
+        if (![self createFolderForPath:self.filename]) {
             [self.delegate downloadDidFail:self];
             return;
         }
 
-        if ([fileManager fileExistsAtPath:self.filename])
-        {
+        if ([fileManager fileExistsAtPath:self.filename]) {
             [fileManager removeItemAtPath:self.filename error:&error];
-            if (error)
-            {
+            if (error) {
                 self.error = error;
                 [self.delegate downloadDidFail:self];
                 return;
@@ -183,16 +170,14 @@
         }
         
         [fileManager copyItemAtPath:self.tempFilename toPath:self.filename error:&error];
-        if (error)
-        {
+        if (error) {
             self.error = error;
             [self.delegate downloadDidFail:self];
             return;
         }
 
         [fileManager removeItemAtPath:self.tempFilename error:&error];
-        if (error)
-        {
+        if (error) {
             self.error = error;
             [self.delegate downloadDidFail:self];
             return;
@@ -235,18 +220,12 @@
 
 - (void)connection:(NSURLConnection*)connection didReceiveResponse:(NSURLResponse *)response
 {
-    if ([response isKindOfClass:[NSHTTPURLResponse class]])
-    {
-        NSHTTPURLResponse *httpResponse = (id)response;
+    if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
+        NSInteger statusCode = [(NSHTTPURLResponse *)response statusCode];
         
-        NSInteger statusCode = [httpResponse statusCode];
-        
-        if (statusCode == 200)
-        {
+        if (statusCode == 200) {
             self.expectedContentLength = [response expectedContentLength];
-        }
-        else if (statusCode >= 400)
-        {
+        } else if (statusCode >= 400) {
             self.error = [NSError errorWithDomain:[NSBundle mainBundle].bundleIdentifier
                                              code:statusCode
                                          userInfo:@{
@@ -256,9 +235,7 @@
                                                   }];
             [self cleanupConnectionSuccessful:NO];
         }
-    }
-    else
-    {
+    } else {
         self.expectedContentLength = -1;
     }
 }
