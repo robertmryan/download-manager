@@ -81,7 +81,10 @@
         return;
     }
     
-    self.connection = [NSURLConnection connectionWithRequest:request delegate:self];
+    self.connection = [[NSURLConnection alloc] initWithRequest:request delegate:self startImmediately:NO];
+    [self.connection scheduleInRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
+    [self.connection start];
+    
     if (!self.connection) {
         self.error = [NSError errorWithDomain:[NSBundle mainBundle].bundleIdentifier
                                          code:-1
