@@ -98,9 +98,9 @@
     self.cancelButton.enabled = NO;
     
     if (self.downloadErrorCount == 0)
-        message = [NSString stringWithFormat:@"%d file(s) downloaded successfully. The files are located in the app's Documents folder on your device/simulator. (%.1f seconds)", self.downloadSuccessCount, elapsed];
+        message = [NSString stringWithFormat:@"%ld file(s) downloaded successfully. The files are located in the app's Documents folder on your device/simulator. (%.1f seconds)", (long)self.downloadSuccessCount, elapsed];
     else
-        message = [NSString stringWithFormat:@"%d file(s) downloaded successfully. %d file(s) were not downloaded successfully. The files are located in the app's Documents folder on your device/simulator. (%.1f seconds)", self.downloadSuccessCount, self.downloadErrorCount, elapsed];
+        message = [NSString stringWithFormat:@"%ld file(s) downloaded successfully. %ld file(s) were not downloaded successfully. The files are located in the app's Documents folder on your device/simulator. (%.1f seconds)", (long)self.downloadSuccessCount, (long)self.downloadErrorCount, elapsed];
     
     [[[UIAlertView alloc] initWithTitle:nil
                                 message:message
